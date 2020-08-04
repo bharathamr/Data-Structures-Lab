@@ -1,0 +1,264 @@
+/*Exercise 8 : Binary Search Tree*/
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+typedef struct treenode *position;
+typedef struct treenode searchtree;
+struct treenode{
+	char element[50];
+	searchtree *left;
+	searchtree *right;
+};
+searchtree* create()
+{
+	searchtree *t;
+	t = (struct treenode*)malloc(sizeof(struct treenode));
+	t = NULL;
+	return t;
+}
+position findmin(searchtree *t)
+{
+	if(t==NULL)
+		return NULL;
+	else if(t->left==NULL)
+		return t;
+	else
+		return findmin(t->left);
+}
+
+position findmax(searchtree *t)
+{
+	if(t!=NULL)
+		while(t->right!=NULL)
+			t=t->right;
+	return t;
+}
+
+searchtree* insert(char x[50], searchtree* t)
+{
+
+	if(t == NULL)
+	{
+		t = (struct treenode*)malloc(sizeof(struct treenode));
+		if(t == NULL)
+			printf("out of space\n");
+		else
+		{
+			strcpy(t->element,x);
+			t->left = t->right = NULL;
+		}
+	}
+	else 
+	{
+		if(strcmp(t->element,x)>0)
+			t->left=insert(x,t->left);
+		else
+			t->right=insert(x,t->right);
+	}
+	return t;
+}
+void inorder(searchtree *t)
+{
+	if(t!=NULL)
+	{
+		inorder(t->left);
+		printf("%s\n",t->element);
+		inorder(t->right);
+	}
+}
+
+searchtree* delete(char x[], searchtree *t)
+{
+	position tmpcell;
+	if(t==NULL)
+		printf("Element not found");
+	else if(strcmp(t->element,x)>0)
+		t->left=delete(x,t->left);
+	else if(strcmp(t->element,x)<0)
+		t->right=delete(x,t->right);
+	else if(t->left && t->right)
+	{
+		tmpcell=findmin(t->right);
+		strcpy(t->element,tmpcell->element);
+		t->right=delete(t->element,t->right);
+	}
+	else
+	{
+		tmpcell=t;
+		if(t->left==NULL)
+			t=t->right;
+		else if(t->right==NULL)
+			t=t->left;
+		free(tmpcell);
+	}
+	return t;
+}
+
+searchtree* findGrandParent(char x[50], searchtree *t)
+{
+    searchtree *temp = t;
+    while(temp!=NULL)
+    {
+        if(temp->left->left && !strcmp(temp->left->left->element, x))
+            return temp;
+        if(temp->left->right && !strcmp(temp->left->right->element, x))
+            return temp;
+        if(temp->right->left && !strcmp(temp->right->left->element, x))
+            return temp;
+        if(temp->right->right && !strcmp(temp->right->right->element, x))
+            return temp;
+        else if(strcmp(x, temp->element) < 0 && temp->left != NULL)
+            temp = temp->left;
+        else if(strcmp(x, temp->element) > 0 && temp->right != NULL)
+            temp = temp->right;
+    }
+    return NULL;
+}
+
+void findGrandChildren(char x[50], searchtree *t)
+{
+    searchtree *temp = (searchtree *)malloc(sizeof(searchtree));
+    temp = t;
+    while(temp!=NULL)
+    {
+        if(strcmp(x, temp->element) < 0)
+            temp = temp->left;
+        else if(strcmp(x, temp->element) > 0)
+            temp = temp->right;
+        else
+        {
+            printf("\n\nGrandChildren of %s : ", temp->element);
+            int flag =0;
+            if(temp->left)
+            {
+                if(temp->left->left){
+                    printf("%s", temp->left->left->element); flag = 1; }
+                if(temp->left->right){
+                    printf("%s", temp->left->right->element); flag = 1; }
+            }
+            if(temp->right)
+            {
+                if(temp->right->left){
+                    printf("%s", temp->right->left->element); flag = 1; }
+                if(temp->right->right){
+                    printf("%s", temp->right->right->element); flag = 1; }
+            }
+            if(!flag)
+                printf("%s has no grandchildren.", temp->element);
+            printf("\n");
+            break;
+        }
+    }
+}
+
+void findSibling(char x[50], searchtree *t)
+{
+    while(t!=NULL)
+    {
+        if(t->left && t->right)
+        {
+            if(!strcmp(x, t->left->element))
+            {
+                printf("\n%s is the sibling of %s", t->right->element, x);
+                return;
+            }
+            else if(!strcmp(x, t->right->element))
+            {
+                printf("\n%s is the sibling of %s", t->left->element, x);
+                return;
+            }
+            else if(strcmp(x, t->element) > 0)
+                t = t->right;
+            else if(strcmp(x, t->element) < 0)
+                t = t->left;
+            else
+                printf("\n%s does not have any siblings.", x);
+        }
+        else
+        {
+            printf("\n%s does not have any siblings.", x);
+            break;
+        }
+    }
+}
+int main()
+{
+	char str[50];
+	searchtree *s = create();
+	s = insert("Kumar",s);
+	s = insert("Anusha",s);
+	s = insert("Ram",s);
+	s = insert("Charan",s);
+	s = insert("Mohan",s);
+	s = insert("Karthika",s);
+	s = insert("Chitra",s);
+	s = insert("Lakshmi",s);
+	s = insert("Abishek",s);
+	s = insert("Swetha",s);
+	s = insert("Tarun",s);
+	s = insert("Sanjana",s);
+	printf("Alphabetical order : \n");
+	inorder(s);
+
+	printf("\n----------\nGrandparent of Karthika : %s\n", findGrandParent("Karthika", s)->element);
+	printf("Grandparent of Lakshmi : %s", findGrandParent("Lakshmi", s)->element);
+	printf("\n----------\n");
+	findGrandChildren("Charan", s);
+	printf("\n----------\n");
+	findSibling("Swetha", s);
+	findSibling("Chitra", s);
+
+	s = delete("Ram",s);
+	printf("\n----------\nDelete Ram : \n\n");
+	inorder(s);
+}
+
+/*
+output:
+
+amr@ubuntu:~/Desktop/DS$ ./bout
+Alphabetical order : 
+Abishek
+Anusha
+Charan
+Chitra
+Karthika
+Kumar
+Lakshmi
+Mohan
+Ram
+Sanjana
+Swetha
+Tarun
+
+----------
+Grandparent of Karthika : Anusha
+Grandparent of Lakshmi : Ram
+----------
+
+
+GrandChildren of Charan : Chitra
+
+----------
+
+Mohan is the sibling of Swetha
+Chitra does not have any siblings.
+----------
+Delete Ram : 
+
+Abishek
+Anusha
+Charan
+Chitra
+Karthika
+Kumar
+Lakshmi
+Mohan
+Sanjana
+Swetha
+Tarun
+
+
+*/

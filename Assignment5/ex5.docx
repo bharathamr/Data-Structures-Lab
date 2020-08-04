@@ -1,0 +1,242 @@
+// Stack.h
+
+typedef char elementtype;
+char pr[50];
+struct stackrecord
+{
+	int capacity;
+	char topofstack;
+	elementtype *array;
+};
+typedef struct stackrecord* stack;
+
+stack createstack(int max)
+{
+	stack s;
+	if(max < 3)
+		printf("stack size is too small");
+	s = malloc(sizeof(struct stackrecord));
+	s -> array = malloc(sizeof(elementtype)*max);
+	s -> capacity = max;
+	return s;
+}
+
+int isempty(stack s)
+{
+	return s->topofstack == NULL;
+}
+
+void push(char x,stack s)
+{
+	if(isfull(s))
+		printf("the stack is full");
+	else
+	    s -> array[++s -> topofstack] = x;
+}
+
+void pop(stack s)
+{
+	if(isempty(s))
+		printf("empty stack");
+	else
+		s -> topofstack--;
+}
+
+char top(stack s)
+{
+	if(!isempty(s))
+		return s -> array[s -> topofstack];
+	printf("Empty stack");
+	return '\0';
+}
+
+int isfull(stack s)
+{
+	return s -> topofstack == s -> capacity;
+}
+
+void conv(char *exp)
+{
+	stack ex = createstack(strlen(exp));
+	int j=0;
+	for(int i=0; exp[i]; ++i)
+	{
+		if(isdigit(exp[i]))
+		{
+			pr[j] = exp[i];
+			j++;
+		}
+		else
+		{
+			if(exp[i] == '{' || exp[i] == '[' || exp[i] == '(' || exp[i] == '+' || exp[i] == '-' || exp[i] == '*' || exp[i] == '/')
+			{
+				push(exp[i],ex);
+			}
+			else
+			{
+			    if(exp[i] == '}')
+			    {
+			        char o;
+			    	while((o = top(ex)) != '{' && !isempty(ex))
+			    	{
+                    	              pr[j] = o;
+                    	              j++;
+                    	              pop(ex);
+			    	}
+			    	pop(ex);
+			    }
+			    else
+			    {
+			    	if(exp[i] == ']')
+			    	{
+			        	char o;
+			    		while((o = top(ex)) != '[' && !isempty(ex) )
+			    		{
+                    		              pr[j] = o;
+                    		              j++;
+                    		              pop(ex);
+			    		}
+			    		pop(ex);
+			        }
+			    	else
+			    	{
+			    		if(exp[i] == ')')
+			    		{
+			    			char o;
+			    			while((o = top(ex)) != '(' && !isempty(ex) )
+			    			{
+                    			            pr[j] = o;
+                    			            j++;
+                    			            pop(ex);
+			    			}
+			    			pop(ex);
+			    	    }
+
+			        }  
+                           }
+			}
+		}
+	}
+	while(isempty(ex) != 1 )
+	{
+		if(top(ex) == '+' || top(ex) == '-' || top(ex) == '*' || top(ex) == '/')
+		{
+        	pr[j] = top(ex);
+        	j++;
+        	pop(ex);
+                }
+                else
+                {
+        	pr[0] = '\0';
+                break;
+                }
+	}
+	pr[j] = '\0';
+}
+
+void eval(char *a,int max)
+{
+	int sum = 0,A =0,B = 0,totsum=0;
+	stack s1 = createstack(max);
+	for(int i=0; i<=max; ++i)
+	{
+		if(isdigit(a[i]))
+			push(a[i],s1);
+		else
+		{
+			if(a[i] == '+')
+			{
+				A = (top(s1) - '0');
+				pop(s1);
+			        B = (top(s1) - '0');
+				pop(s1);
+				sum = A+B;
+                                sum = sum + '0';
+				push(sum,s1);
+			}
+			if(a[i] == '-')
+			{
+				A = (top(s1) - '0');
+				pop(s1);
+				B = (top(s1) - '0');
+				pop(s1);
+				    sum = B - A;
+                                sum = sum + '0';
+				push(sum ,s1);
+			}
+			if(a[i] == '*')
+			{
+				A = (top(s1) - '0');
+				pop(s1);
+				B = (top(s1) - '0');
+				pop(s1);
+				sum = A*B;
+                                sum = sum + '0';
+				push(sum,s1);
+                                
+			}
+			if(a[i] == '/')
+			{
+				A = (top(s1) - '0');
+				pop(s1);
+				B = (top(s1) - '0');
+				pop(s1);
+				    sum = B/A;
+                                sum = sum + '0';
+				push(sum,s1);
+			}
+		}
+	}
+	printf("the sum is %d\n",top(s1) - '0');
+}
+
+// main function
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include"stack.h"
+
+int main()
+{
+	char express[50],eq[50];
+        int cont;
+        do
+        {
+	printf("Enter the infix expression");
+	scanf("%s",express);
+        conv(express);
+	if(pr[0] != '\0')
+        {
+    	   printf("The postfix expression is : %s\n",pr);
+    	   eval(pr,strlen(express));
+        }
+        else
+    	      printf("ERROR!!,you have enetered the unbalanced equation\n");
+        printf("1 : to continue with another expression\n0 : to exit\nEnter :  ");
+        scanf("%d",&cont);
+
+        }while(cont!=0);
+    return 0;
+}
+
+/*
+Output : 
+
+Enter the infix expression(2+5)*(3-6)/(7*8)
+The postfix expression is : 25+36-78*'/'*
+the sum is 0
+1 : to continue with another expression
+0 : to exit
+Enter :  1
+Enter the infix expression7-(((3+2)*(6+1))/(5+6)
+ERROR!!,you have enetered the unbalanced equation
+1 : to continue with another expression
+0 : to exit
+Enter :  1
+Enter the infix expression(((3+2)*(2+5)
+ERROR!!,you have enetered the unbalanced equation
+1 : to continue with another expression
+0 : to exit
+Enter :  0
+*/

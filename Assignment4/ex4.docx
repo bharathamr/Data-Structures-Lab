@@ -1,0 +1,434 @@
+/* PROTOTYPE */
+
+typedef struct mynode
+{
+	int regno,mark[5];
+	char name[50];
+	struct mynode *prev;
+	struct mynode *next;
+}node;
+
+node* createemptylist();
+void insertfirst(node *q,int a,char b[],int c[]);
+void insertlast(node *q,int a,char b[],int c[]);
+void insertafter(node *p,int a,char b[],int c[],char d[]);
+int search(node *s,char a[]);
+void delete(node *s,char b[]);
+void display(node *s);
+void alphadisplay(node *s);
+
+
+/* DEFINITION */
+
+node* createemptylist()
+{
+	node *h;
+    h = (node*)malloc(sizeof(node));
+    h->next = NULL;
+    h->prev = NULL;
+    return h; 
+}
+
+void insertlast(node *p,int a,char b[],int c[])
+{
+	
+	node *x,*y;
+    x = (node*)malloc(sizeof(node));
+    x -> regno = a;
+    strcpy(x->name,b);
+    for(int j=0;j<5;j++)
+    	x -> mark[j] = c[j];
+    y = p;
+    while(y -> next != NULL)
+    	y = y -> next;
+    x -> next = y -> next;
+    y -> next = x; 
+    x -> prev = y;  
+}
+
+void insertfirst(node *q,int a,char b[],int c[])
+{
+	node *t,*temp;
+	t = (node*)malloc(sizeof(node));
+	temp = (node*)malloc(sizeof(node));
+	t -> regno = a;
+	strcpy(t -> name,b);
+	for(int j=0;j<5;j++)
+    	t -> mark[j] = c[j];
+    t -> next = q -> next;
+    q -> next = t;
+    t -> next -> prev = q -> prev;
+    q -> prev = t;
+}
+
+void insertafter(node *p,int a,char b[],int c[],char d[])
+{
+	
+	node *x,*y;
+    x = (node*)malloc(sizeof(node));
+    x -> regno = a;
+    strcpy(x->name,b);
+    for(int j=0;j<5;j++)
+    	x -> mark[j] = c[j];
+    y = p;
+    while(strcmp(y->name,d) != 0)
+    	y = y -> next;
+    x -> next = y -> next;
+    y -> next = x;
+    y -> next -> prev = x; 
+    x -> prev = y;  
+}
+
+int search(node *s,char a[])
+{
+	node *t1;
+	t1 = s;
+	while(t1 -> next != NULL)
+	{
+		if(strcmp(t1->name,a) == 0)
+			return 1;
+		t1 = t1 -> next;
+	}
+	return 0;
+}
+
+void delete(node *s,char b[])
+{
+	node *t1;
+	t1 = s;
+	while(t1 -> next != NULL)
+	{
+		if(strcmp(t1 -> name,b) == 0)
+		{
+			t1 -> next -> prev = t1 -> prev;
+			t1 -> prev -> next = t1 -> next;
+			break;
+		}
+		else
+			t1 = t1 -> next;
+	}
+	if(t1 -> next == NULL)
+	{	if(strcmp(t1 -> name,b) == 0)
+		{
+			t1 -> prev -> next = NULL;
+			}
+	}
+	display(s);
+}
+
+void display(node *s)
+{
+	node *t1;
+	t1 = s -> next;
+	while(t1 != NULL)
+	{
+         printf("Regno : %d\nName : %s\n",t1 -> regno,t1 -> name);
+         for(int k=0;k<5;k++)
+         	printf("mark%d : %d\n",k+1,t1 -> mark[k]);
+         printf("\n\n");
+         t1 = t1 -> next;
+         }
+
+}
+
+void alphadisplay(node *s)
+{
+	node *t1,*t2;
+	char a[50],b,c[5];
+        int con;
+	t1 = s -> next;
+	while(t1 -> next != NULL)
+        {
+		t2 = t1 -> next;
+		while(t2 -> next != NULL)
+		{
+              
+            con = strcmp(t1 -> name,t2 -> name);
+            if(con > 0)
+			{
+                                strcpy(a,t1 -> name);
+                                b = t1 -> regno;
+                                for(int i=0;i<5;i++)
+                                    c[i] = t1 -> mark[i];
+				strcpy(t1 -> name,t2 -> name);
+                                t1 -> regno = t2 -> regno;
+                                for(int i=0;i<5;i++)
+                                    t1 -> mark[i] = t2 -> mark[i];
+                                strcpy(t2 -> name,a);
+                                t2 -> regno = b;
+                                for(int i=0;i<5;i++)
+                                    t2 -> mark[i] = c[i];
+                            }
+            t2 = t2 -> next;
+
+		}
+		if(t2 -> next == NULL)
+		{
+			 con = strcmp(t1 -> name,t2 -> name);
+            if(con > 0)
+			{
+			                  strcpy(a,t1 -> name);
+                                b = t1 -> regno;
+                                for(int i=0;i<5;i++)
+                                    c[i] = t1 -> mark[i];
+				strcpy(t1 -> name,t2 -> name);
+                                t1 -> regno = t2 -> regno;
+                                for(int i=0;i<5;i++)
+                                    t1 -> mark[i] = t2 -> mark[i];
+                                strcpy(t2 -> name,a);
+                                t2 -> regno = b;
+                                for(int i=0;i<5;i++)
+                                    t2 -> mark[i] = c[i];	
+                                    }
+                                    	}
+		t1 = t1 -> next;
+	}
+        display(s);     
+}
+
+
+
+
+/* MAIN PROGRAM */
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include"doubleproto.h"
+#include"doubledef.h"
+
+void main()
+{
+	node *hd;
+	int regno,m[5],stop,n,stop1;
+	char string[50],name_after[50],search_name[50],deletename[50];
+	hd = createemptylist();
+	printf("-----Enter the student record-----\n\n");
+	do
+	{
+	   printf("enter the regno :");
+	   scanf("%d",&regno);
+	   printf("enter the name : ");
+	   scanf("%s",string);
+	   for(int i=0;i<5;i++)
+	   {
+	   	printf("enter the mark in subject%d : ",i+1);
+	   	scanf("%d",&m[i]);
+	   }
+	   insertlast(hd,regno,string,m);
+	   printf("1:to continue\n0:to exit\n");
+	   scanf("%d",&stop);
+	}while(stop!=0);
+    do
+    {
+    printf("1: Insert student name in the front of the list\n2: Insert student name at the end of the list\n3: Insert a record after a given name in the list\n4: Search a given student in the list\n5: Delete a given student\n6: Display all student names\n7: Display the students in alphabetical order\n ");
+    scanf("%d",&n);
+	switch(n)
+	{
+	   case 1:{
+	   			printf("enter the regno :");
+	   			scanf("%d",&regno);
+	   			printf("enter the name : ");
+	   			scanf("%s",string);
+	   			for(int i=0;i<5;i++)
+       			{
+	   				printf("enter the mark in subject%d : ",i+1);
+	   				scanf("%d",&m[i]);
+       			}
+	   			insertfirst(hd,regno,string,m);
+	   			break;
+	   	}
+	   case 2:{
+	   			printf("enter the regno :");
+	   			scanf("%d",&regno);
+	   			printf("enter the name : ");
+	   			scanf("%s",string);
+	   			for(int i=0;i<5;i++)
+       			{
+	   				printf("enter the mark in subject%d : ",i+1);
+	   				scanf("%d",&m[i]);
+       			}
+	   			insertlast(hd,regno,string,m);
+	   			break;
+	   	}
+	   	case 3:{
+	   		   	printf("enter the regno :");
+	   			scanf("%d",&regno);
+	   			printf("enter the name : ");
+	   			scanf("%s",string);
+	   			for(int i=0;i<5;i++)
+       			{
+	   				printf("enter the mark in subject%d : ",i+1);
+	   				scanf("%d",&m[i]);
+       			}
+       			printf("enter the name after which this record should be inserted : ");
+	   			scanf("%s",name_after);
+	   			insertafter(hd,regno,string,m,name_after);
+	   			break;
+
+	   	}
+	   	case 4:{
+	   		printf("enter the name to be searched : ");
+	   		scanf("%s",search_name);
+	   		if(search(hd,search_name) == 0)
+	   			printf("The record found\n");
+	   		else
+	   			printf("The record not found\n");
+	   		break;
+	   	}
+	   	case 5:{
+	   		printf("Enter the student name to be deleted");
+	   		scanf("%s",deletename);
+	   		delete(hd,deletename);
+	   		break;
+	   	}
+	    case 6:{
+	   	       display(hd);
+	           break;
+	    }
+	    case 7:{
+	    	alphadisplay(hd);
+	    	break;
+	    }
+	
+	  
+   }
+    printf("1: to continue the operations\n0: to exit\n");
+	scanf("%d",&stop1);
+   }while(stop1 !=0);
+}
+
+
+/*
+
+output :
+
+-----Enter the student record-----
+
+enter the regno :1
+enter the name : bharath
+enter the mark in subject1 : 33
+enter the mark in subject2 : 33
+enter the mark in subject3 : 33
+enter the mark in subject4 : 33
+enter the mark in subject5 : 56
+1:to continue
+0:to exit
+1
+enter the regno :2
+enter the name : amr  
+enter the mark in subject1 : 90
+enter the mark in subject2 : 90
+enter the mark in subject3 : 90
+enter the mark in subject4 : 90
+enter the mark in subject5 : 90
+1:to continue
+0:to exit
+0
+1: Insert student name in the front of the list
+2: Insert student name at the end of the list
+3: Insert a record after a given name in the list
+4: Search a given student in the list
+5: Delete a given student
+6: Display all student names
+7: Display the students in alphabetical order
+ 2
+enter the regno :3
+enter the name : hari
+enter the mark in subject1 : 68
+enter the mark in subject2 : 65
+enter the mark in subject3 : 63
+enter the mark in subject4 : 62
+enter the mark in subject5 : 64
+1: to continue the operations
+0: to exit
+1
+1: Insert student name in the front of the list
+2: Insert student name at the end of the list
+3: Insert a record after a given name in the list
+4: Search a given student in the list
+5: Delete a given student
+6: Display all student names
+7: Display the students in alphabetical order
+ 6
+Regno : 1
+Name : bharath
+mark1 : 33
+mark2 : 33
+mark3 : 33
+mark4 : 33
+mark5 : 56
+
+
+Regno : 2
+Name : amr
+mark1 : 90
+mark2 : 90
+mark3 : 90
+mark4 : 90
+mark5 : 90
+
+
+Regno : 3
+Name : hari
+mark1 : 68
+mark2 : 65
+mark3 : 63
+mark4 : 62
+mark5 : 64
+
+
+1: to continue the operations
+0: to exit
+1
+1: Insert student name in the front of the list
+2: Insert student name at the end of the list
+3: Insert a record after a given name in the list
+4: Search a given student in the list
+5: Delete a given student
+6: Display all student names
+7: Display the students in alphabetical order
+ 7
+Regno : 2
+Name : amr
+mark1 : 90
+mark2 : 90
+mark3 : 90
+mark4 : 90
+mark5 : 90
+
+
+Regno : 1
+Name : bharath
+mark1 : 33
+mark2 : 33
+mark3 : 33
+mark4 : 33
+mark5 : 56
+
+
+Regno : 3
+Name : hari
+mark1 : 68
+mark2 : 65
+mark3 : 63
+mark4 : 62
+mark5 : 64
+
+
+1: to continue the operations
+0: to exit
+1
+1: Insert student name in the front of the list
+2: Insert student name at the end of the list
+3: Insert a record after a given name in the list
+4: Search a given student in the list
+5: Delete a given student
+6: Display all student names
+7: Display the students in alphabetical order
+ 4
+enter the name to be searched : bharath
+The record found
+1: to continue the operations
+0: to exit
+0
+*/

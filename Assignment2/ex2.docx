@@ -1,0 +1,423 @@
+/* prototype.h */
+
+#include<stdio.h>
+#include<stdlib.h>
+struct record {
+    int regno;
+    char name[30];
+    int mark[5];
+}student[20];
+void inserttop(struct record st[],struct record insertrecord,int length);
+void insertbottom(struct record st[],struct record insertrecord,int length);
+void insertafter(struct record st[],struct record insertrecord,int givenreg,int length);
+void searching(struct record st1[],char givenname[50],int length);
+void delete(struct record st[],struct record deleterecord,int length);
+void display(struct record st2[],int length);
+void subdisplay(struct record st2[],int length, struct record searchrecord);
+void printing(struct record st3[],int s);
+struct record getrecord();
+
+/* definitions.h */
+
+#include<stdio.h>
+#include<stdlib.h>
+struct record getrecord()
+{
+  struct record subrecord;
+  subrecord.regno =0;
+  strcpy(subrecord.name,"\0");
+  for(int k=0;k<5;k++)
+      subrecord.mark[k] = 0;
+  printf("enter the record\n");
+  printf("enter the student regno:");
+  scanf("%d",&subrecord.regno);
+  printf("enter the student name:");
+  scanf("%s",subrecord.name);
+  for(int j=0;j<5;j++)
+  {
+    printf("enter the mark scored in subject %d:",j+1);
+    scanf("%d",&subrecord.mark[j]);
+  }
+  return subrecord;
+}
+void inserttop(struct record st[],struct record insertrecord,int length)
+{
+    for(int i=length;i>0;i--)
+    	st[i] = st[i-1];
+    st[0] = insertrecord;
+}
+void insertbottom(struct record st[],struct record insertrecord,int length)
+{
+    st[length] = insertrecord;
+}
+void insertafter(struct record st[],struct record insertrecord,int givenreg,int length)
+{
+    int j=0,pos;
+    while(j<length)
+    {
+    	if(givenreg == st[j].regno)
+    	{
+             pos = j;
+             break;
+    	}
+        j++;
+    }
+    for(int k=length-1;k>=pos+1;k--)
+    {	st[k+1] = st[k];  }
+    st[pos+1] = insertrecord;
+}
+void searching(struct record st1[],char givenname[50],int length)
+{
+	int j = 0,count = 0;
+	while(j<length)
+	{
+		if(strcmp(st1[j++].name,givenname) == 0)
+		{
+                	printf("the record found\n");
+                        printing(st1,j-1);
+		        count++;
+                        break;
+		}
+	}
+	if(count == 0)
+		printf("the record not found\n");
+}
+void delete(struct record st[],struct record deleterecord,int length)
+{
+    int j=0;
+    while(j<length)
+    {
+    	if(deleterecord.regno == st[j].regno && deleterecord.name == st[j].name)
+    	{
+             for(int k=j; k<=length-1; k++)
+              {    st[k] = st[k+1]; }
+    	}
+        j++;
+    }
+}
+void display(struct record st2[],int length)
+{
+	printf("the total record are : \n");
+	for(int i=0;i<length;i++)
+            printing(st2,i);
+}
+void subdisplay(struct record st2[],int length, struct record searchrecord)
+{
+	int pos,j=0;
+	while(j<length)
+        {
+    	     if(searchrecord.regno == st2[j++].regno)
+                pos = j -1;
+        }
+        printf("the record before the position is :\n");
+        printing(st2,pos-1);
+        printf("the record after the position is :\n");
+        printing(st2,pos+1);
+}
+void printing(struct record st3[],int s)
+{
+        printf("the reg no of the record : %d\n",st3[s].regno);
+        printf("the name of the record : %s\n",st3[s].name);
+        for(int k=0;k<5;k++)
+	     printf("the mark of the given record in subject %d is : %d\n",k+1,st3[s].mark[k]);
+        printf("\n");
+}
+
+/* main program */
+
+#include<stdio.h>
+#include<stdlib.h>
+#include"definition.h"
+#include"prototype.h"
+
+void main()
+{
+  int stop,option,size = 5,after;
+  for(int i=0;i<5;i++)
+  {
+      student[i] = getrecord();
+  }
+  do
+  {
+    printf("enter the any option from the following\n");
+    printf("1: Insert a record in the front of the list\n2: Insert a record at the end of the list\n3: Insert a record after a given Regno in the list\n4: Search a given record in the list based on Name\n5: Delete a given student record\n6: Display all students record\n7: Display the previous and next record of a given student\n ");
+  scanf("%d",&option);
+  switch(option)
+  {
+  	    case 1:{
+                struct record newrecord = getrecord();
+  		inserttop(student,newrecord,size);
+  		size++;
+  		break;
+  	    }
+  	    case 2:{
+                struct record newrecord = getrecord();
+  		insertbottom(student,newrecord,size);
+  		size++;
+  		break;
+  	        }
+  	    case 3:{
+                struct record newrecord = getrecord();
+  		printf("enter the regno after where this record should be inserted:");
+  		scanf("%d",&after);
+  		insertafter(student,newrecord,after,size);
+  		size++;
+  		break;
+  	    }
+  	    case 4:{
+                char searchname[30];
+  	    	printf("enter the name to be searched:");
+            	scanf("%s",searchname);
+  	    	searching(student,searchname,size);
+  	    	break;
+  	    }
+  	    case 5:{
+                struct record newrecord = getrecord();
+  	    	delete(student,newrecord,size);
+  	    	size--;
+  	    	break;
+  	    }
+  	    case 6:{
+            	display(student,size);
+            	break;
+  	    }
+  	    case 7:{
+                struct record newrecord = getrecord();
+  	    	subdisplay(student,size,newrecord);
+  	    	break;
+  	    }
+    }
+  printf("enter 0 to stop or else 1 to continue : ");
+  scanf("%d",&stop);
+}while(stop !=0);
+}
+
+
+/*output:
+enter the record
+enter the student regno:1
+enter the student name:bharath
+enter the mark scored in subject 1:90
+enter the mark scored in subject 2:90
+enter the mark scored in subject 3:90
+enter the mark scored in subject 4:90
+enter the mark scored in subject 5:90
+enter the record
+enter the student regno:2
+enter the student name:kumar
+enter the mark scored in subject 1:80
+enter the mark scored in subject 2:80
+enter the mark scored in subject 3:80
+enter the mark scored in subject 4:80
+enter the mark scored in subject 5:80
+enter the record
+enter the student regno:3
+enter the student name:hari
+enter the mark scored in subject 1:70
+enter the mark scored in subject 2:70
+enter the mark scored in subject 3:70
+enter the mark scored in subject 4:70
+enter the mark scored in subject 5:70
+enter the record
+enter the student regno:4
+enter the student name:haran
+enter the mark scored in subject 1:60
+enter the mark scored in subject 2:60
+enter the mark scored in subject 3:60
+enter the mark scored in subject 4:60
+enter the mark scored in subject 5:60
+enter the record
+enter the student regno:5
+enter the student name:amr
+enter the mark scored in subject 1:98
+enter the mark scored in subject 2:98
+enter the mark scored in subject 3:98
+enter the mark scored in subject 4:98
+enter the mark scored in subject 5:98
+enter 0 to stop or else 1 to continue : 1
+enter the any option from the following
+1: Insert a record in the front of the list
+2: Insert a record at the end of the list
+3: Insert a record after a given Regno in the list
+4: Search a given record in the list based on Name
+5: Delete a given student record
+6: Display all students record
+7: Display the previous and next record of a given student
+ 1
+enter the record
+enter the student regno:0
+enter the student name:harish
+enter the mark scored in subject 1:96
+enter the mark scored in subject 2:96
+enter the mark scored in subject 3:96
+enter the mark scored in subject 4:96
+enter the mark scored in subject 5:96
+enter 0 to stop or else 1 to continue : 1
+enter the any option from the following
+1: Insert a record in the front of the list
+2: Insert a record at the end of the list
+3: Insert a record after a given Regno in the list
+4: Search a given record in the list based on Name
+5: Delete a given student record
+6: Display all students record
+7: Display the previous and next record of a given student
+ 2
+enter the record
+enter the student regno:6
+enter the student name:amrbk
+enter the mark scored in subject 1:99
+enter the mark scored in subject 2:99
+enter the mark scored in subject 3:99
+enter the mark scored in subject 4:99
+enter the mark scored in subject 5:99
+enter 0 to stop or else 1 to continue : 1
+enter the any option from the following
+1: Insert a record in the front of the list
+2: Insert a record at the end of the list
+3: Insert a record after a given Regno in the list
+4: Search a given record in the list based on Name
+5: Delete a given student record
+6: Display all students record
+7: Display the previous and next record of a given student
+ 3
+enter the record
+enter the student regno:30
+enter the student name:amrbj
+enter the mark scored in subject 1:50
+enter the mark scored in subject 2:50
+enter the mark scored in subject 3:50
+enter the mark scored in subject 4:50
+enter the mark scored in subject 5:50
+enter the regno after where this record should be inserted:3
+
+enter 0 to stop or else 1 to continue : 1
+enter the any option from the following
+1: Insert a record in the front of the list
+2: Insert a record at the end of the list
+3: Insert a record after a given Regno in the list
+4: Search a given record in the list based on Name
+5: Delete a given student record
+6: Display all students record
+7: Display the previous and next record of a given student
+ 4
+enter the name to be searched:amrbj
+the record found
+the reg no of the record : 30
+the name of the record : amrbj
+the mark of the given record in subject 1 is : 50
+the mark of the given record in subject 2 is : 50
+the mark of the given record in subject 3 is : 50
+the mark of the given record in subject 4 is : 50
+the mark of the given record in subject 5 is : 50
+
+enter 0 to stop or else 1 to continue : 1
+
+enter the any option from the following
+1: Insert a record in the front of the list
+2: Insert a record at the end of the list
+3: Insert a record after a given Regno in the list
+4: Search a given record in the list based on Name
+5: Delete a given student record
+6: Display all students record
+7: Display the previous and next record of a given student
+ 6
+the total record are : 
+the reg no of the record : 0
+the name of the record : harish
+the mark of the given record in subject 1 is : 96
+the mark of the given record in subject 2 is : 96
+the mark of the given record in subject 3 is : 96
+the mark of the given record in subject 4 is : 96
+the mark of the given record in subject 5 is : 96
+
+the reg no of the record : 1
+the name of the record : bharath
+the mark of the given record in subject 1 is : 90
+the mark of the given record in subject 2 is : 90
+the mark of the given record in subject 3 is : 90
+the mark of the given record in subject 4 is : 90
+the mark of the given record in subject 5 is : 90
+
+the reg no of the record : 2
+the name of the record : kumar
+the mark of the given record in subject 1 is : 80
+the mark of the given record in subject 2 is : 80
+the mark of the given record in subject 3 is : 80
+the mark of the given record in subject 4 is : 80
+the mark of the given record in subject 5 is : 80
+
+the record after the position is :
+the reg no of the record : 3
+the name of the record : hari
+the mark of the given record in subject 1 is : 70
+the mark of the given record in subject 2 is : 70
+the mark of the given record in subject 3 is : 70
+the mark of the given record in subject 4 is : 70
+the mark of the given record in subject 5 is : 70
+
+the reg no of the record : 4
+the name of the record : haran
+the mark of the given record in subject 1 is : 60
+the mark of the given record in subject 2 is : 60
+the mark of the given record in subject 3 is : 60
+the mark of the given record in subject 4 is : 60
+the mark of the given record in subject 5 is : 60
+
+the record before the position is :
+the reg no of the record : 5
+the name of the record : amr
+the mark of the given record in subject 1 is : 98
+the mark of the given record in subject 2 is : 98
+the mark of the given record in subject 3 is : 98
+the mark of the given record in subject 4 is : 98
+the mark of the given record in subject 5 is : 98
+
+the record after the position is :
+the reg no of the record : 6
+the name of the record : amrbk
+the mark of the given record in subject 1 is : 99
+the mark of the given record in subject 2 is : 99
+the mark of the given record in subject 3 is : 99
+the mark of the given record in subject 4 is : 99
+the mark of the given record in subject 5 is : 99
+
+enter 0 to stop or else 1 to continue : 1
+enter the any option from the following
+1: Insert a record in the front of the list
+2: Insert a record at the end of the list
+3: Insert a record after a given Regno in the list
+4: Search a given record in the list based on Name
+5: Delete a given student record
+6: Display all students record
+7: Display the previous and next record of a given student
+ 7
+enter the record
+enter the student regno:3
+enter the student name:hari
+enter the mark scored in subject 1:70
+enter the mark scored in subject 2:70
+enter the mark scored in subject 3:70
+enter the mark scored in subject 4:70
+enter the mark scored in subject 5:70
+the record after the position is :
+the reg no of the record : 2
+the name of the record : kumar
+the mark of the given record in subject 1 is : 80
+the mark of the given record in subject 2 is : 80
+the mark of the given record in subject 3 is : 80
+the mark of the given record in subject 4 is : 80
+the mark of the given record in subject 5 is : 80
+
+the record after the position is :
+the reg no of the record : 4
+the name of the record : haran
+the mark of the given record in subject 1 is : 60
+the mark of the given record in subject 2 is : 60
+the mark of the given record in subject 3 is : 60
+the mark of the given record in subject 4 is : 60
+the mark of the given record in subject 5 is : 60
+
+enter 0 to stop or else 1 to continue : 0
+
+
+*/

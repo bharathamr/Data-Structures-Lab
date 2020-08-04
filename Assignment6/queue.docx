@@ -1,0 +1,164 @@
+/*Queue.h*/
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+struct Queue
+{
+	char jno[4];
+	int bt,wt;
+	struct Queue* next;
+}*front = NULL,*rear = NULL,*front1 = NULL,*rear1 = NULL;
+
+struct Queue* newNode(char a[],int b)
+{
+	struct Queue *temp = (struct Queue*)malloc(sizeof(struct Queue));
+	strcpy(temp -> jno,a);
+	temp -> bt = b;
+	temp -> next = NULL;
+	return temp;
+}
+
+int enQueue(int op,char a[],int b)
+{
+	static int s1,s2;
+	if(op == 1)
+	{
+		struct Queue *temp = newNode(a,b);
+		if(front == NULL)
+		{
+			temp -> wt = 0;
+			front = temp;
+			rear = temp;
+			s1 = front -> bt;
+			return s1;
+		}
+		else
+		{
+			temp -> wt = s1;
+			rear -> next = temp;
+			rear = temp;
+			s1 += rear -> bt;
+			return s1;
+		}
+		
+	}
+	if(op == 2)
+	{
+		struct Queue *temp = newNode(a,b);
+		if(front1 == NULL)
+		{
+			temp -> wt = 0;
+			front1 = temp;
+			rear1 = temp;
+			s2 = front1 -> bt;
+			return s2;
+		}
+		else
+		{
+			temp -> wt = s2;
+			rear1 -> next = temp;
+			rear1 = temp;
+			s2 += rear1 -> bt;
+			return s2;
+		}
+	}
+}
+
+void display(struct Queue* p)
+{
+	float w =0;
+	int size = 0;
+	while(p != NULL)
+	{
+		printf("Job number : %s\tBurst time : %d\tWaiting time : %d\n",p -> jno,p -> bt,p -> wt);
+		w += p->wt;
+		size++;
+		p = p-> next;
+	}
+        printf("The average waiting time %.2f\n",(w/size));
+
+}
+
+
+/*main function*/
+#include<stdio.h>
+#include"queue.h"
+int main()
+{
+	int b,cont,m,n;
+	char j[4];
+	printf("Enter the 1st job number : ");
+	scanf("%s",j);
+	printf("Enter the 1st burst time : ");
+	scanf("%d",&b);
+	m = enQueue(1,j,b);
+	printf("Enter the 2nd job number : ");
+	scanf("%s",j);
+	printf("Enter the 2nd burst time : ");
+	scanf("%d",&b);
+	n = enQueue(2,j,b);
+        do
+	{
+		printf("Enter the job number : ");
+		scanf("%s",j);
+		printf("Enter the burst time : ");
+		scanf("%d",&b);
+		if(m <= n)
+			m = enQueue(1,j,b);
+		else
+			n = enQueue(2,j,b);
+		printf("enter 1: to continue 0 : to exit : ");
+		scanf("%d",&cont);
+
+	}while(cont != 0);
+        display(front);
+	display(front1);      
+	return 0;
+}
+
+/*
+OUTPUT:
+
+Enter the 1st job number : J1
+Enter the 1st burst time : 6
+Enter the 2nd job number : J2
+Enter the 2nd burst time : 5
+Enter the job number : J3
+Enter the burst time : 2
+enter 1: to continue 0 : to exit : 1
+Enter the job number : J4
+Enter the burst time : 3
+enter 1: to continue 0 : to exit : 1
+Enter the job number : J5
+Enter the burst time : 7
+enter 1: to continue 0 : to exit : 1
+Enter the job number : J6
+Enter the burst time : 3
+enter 1: to continue 0 : to exit : 1
+Enter the job number : J7
+Enter the burst time : 7
+enter 1: to continue 0 : to exit : 1
+Enter the job number : J8
+Enter the burst time : 2
+enter 1: to continue 0 : to exit : 1
+Enter the job number : J9
+Enter the burst time : 3
+enter 1: to continue 0 : to exit : 1
+Enter the job number : J10
+Enter the burst time : 7
+enter 1: to continue 0 : to exit : 0
+Job number : J1	Burst time : 6	Waiting time : 0
+Job number : J4	Burst time : 3	Waiting time : 6
+Job number : J6	Burst time : 3	Waiting time : 9
+Job number : J7	Burst time : 7	Waiting time : 12
+Job number : J10	Burst time : 7	Waiting time : 19
+The average waiting time 9.20
+Job number : J2	Burst time : 5	Waiting time : 0
+Job number : J3	Burst time : 2	Waiting time : 5
+Job number : J5	Burst time : 7	Waiting time : 7
+Job number : J8	Burst time : 2	Waiting time : 14
+Job number : J9	Burst time : 3	Waiting time : 16
+The average waiting time 8.40
+*/

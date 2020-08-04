@@ -1,0 +1,155 @@
+/*priority queue using binary heap*/
+#include<stdio.h>
+#include<stdlib.h>
+typedef struct heapstruct *priorityqueue;
+typedef char elementtype;
+typedef int elementtype1;
+#define mindata '\0'
+struct heapstruct
+{
+	int capacity;
+	int size;
+	elementtype **name;
+	elementtype **id;
+	elementtype *salary;
+};
+
+int isempty(priorityqueue h)
+{
+	return h->size == 0;
+}
+
+int isfull(priorityqueue h)
+{
+	return h->size == h -> capacity;
+}
+
+priorityqueue init(int maxelements)
+{
+
+	priorityqueue h;
+	if(maxelements < 3)
+		printf("PQueue is too small");
+	h=malloc(sizeof(struct heapstruct));
+	if(h==NULL)
+		printf("Out of space");
+	h->name=(elementtype*)malloc((maxelements+1)*50);
+	h->id=(elementtype*)malloc((maxelements+1)*50);
+	h->salary=(elementtype*)malloc((maxelements+1)*50);
+	if(h->name==NULL)
+		printf("Out of Space");
+	h->capacity=maxelements;
+	h->size=0;
+	h->name[0] = "\0";
+	h->id[0] = "\0";
+	h -> salary[0] = 0;
+	return h;
+}
+
+void insert(elementtype x[],elementtype y[],elementtype1 z[], priorityqueue h)
+{
+	int i,j,k;
+	if(isfull(h))
+	{
+	printf("PQueue is full");
+	return;
+	}
+	for(i=++(h->size);h->salary[i/2] < z && h->salary[i/2] != 0; i/=2)
+	{
+		h->name[i] = h->name[i/2];
+		h->id[i] = h->id[i/2];
+		h->salary[i] = h->salary[i/2];
+	}
+
+	h->name[i] = x;
+	h->id[i]=y;
+	h->salary[i]=z;
+}
+
+void delete(priorityqueue h,char *name)
+{
+	int i,j,child = 1;
+	if(isempty(h))
+	{
+		printf("PQueue is empty");
+		return;
+	}
+	for(i=1;i <= h-> size;i++)
+	{
+		if(h -> name[i] != name)
+			child++;
+		else
+			break;
+	}
+	for(j=child;j<=h->size;j++)
+	{
+		h -> name[j] = h -> name[j+1];
+		h -> id[j] = h -> id[j+1];
+		h -> salary[j] = h -> salary[j+1];
+	}
+	h -> name[j] = '\0';
+	h -> id[j] = '\0';
+	h -> salary[j] = '\0';
+}
+
+void printer(priorityqueue s)
+{
+	for(int i = 1;s->name[i] != '\0';i++)
+	{
+		printf("%s %s %d\n",s-> name[i],s->id[i],s->salary[i]);
+	}
+	printf("\n");
+}
+
+int main()
+{
+	priorityqueue q;
+	q = init(5);
+	insert("s","1234",45,q);
+	printer(q);
+	insert("r","2345",76,q);
+	printer(q);
+	insert("h","3333",47,q);
+	printer(q);
+	insert("w","3333",50,q);
+	printer(q);
+	insert("h","3333",43,q);
+	printer(q);
+	printf("After deletion : \n");
+	delete(q,"r");
+	printer(q);
+	return 0;
+}
+
+/*
+output :
+
+s 1234 45
+
+r 2345 76
+s 1234 45
+
+r 2345 76
+s 1234 45
+h 3333 47
+
+r 2345 76
+w 3333 50
+h 3333 47
+s 1234 45
+
+r 2345 76
+w 3333 50
+h 3333 47
+s 1234 45
+h 3333 43
+
+After deletion : 
+w 3333 50
+h 3333 47
+s 1234 45
+h 3333 43
+
+
+
+*/

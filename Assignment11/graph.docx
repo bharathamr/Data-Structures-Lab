@@ -1,0 +1,275 @@
+/*EX 11 : GRAPH*/
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<math.h>
+
+typedef struct{
+	int max,top;
+	int *arr;
+}stack;
+
+stack* init(int max){
+	stack *s = (stack*) malloc (sizeof(stack));
+	s->arr = (int*) malloc (sizeof(int));
+	s->max = max;
+	s->top = -1;
+	return s;
+}
+
+typedef struct q{
+	int max,f,r,s;
+	int *a;
+} Q;
+
+void push(int v,stack* s){
+	if(s->top == s->max-1)
+		printf("STACK FULL");
+	else{
+		s->arr[++(s->top)] = v;
+	}
+}
+
+int pop(stack* s){
+	if(s->top == -1){
+		printf("STACK EMPTY");
+		return -1;
+	}
+	else{
+		int v = s->arr[(s->top)--];
+		return v;
+	}
+}
+
+int adj[10][10];
+
+void dfs(int x, int n,int visited[],int flag){
+	stack* s = init(n*n);
+	int v;
+	push(x,s);
+	while(s->top != -1){
+		v = pop(s);
+		if(visited[v] != 1){
+			visited[v] = 1;
+			if(flag == 0)
+				printf("v : %d\n",v);
+			else
+				printf("v : %c\n",v+65);
+			for (int i = 0; i<n; i++){
+				//("%d ",mat[v][i]);
+				if(adj[v][i] == 1){
+					push(i,s);
+					//printf("i : %d\n",i);
+				}
+			}
+		}
+	}
+}
+
+
+int isFull(Q* queue)
+{
+	return (queue->s == queue->max);
+}
+
+int isEmpty(Q* queue)
+{
+	return (queue->s == 0);
+}
+
+Q* initialize(int m){
+	Q *q = (Q*) malloc (sizeof(Q));
+	q->max = m,
+	q->s = 0;
+	q->f = q->r = -1;
+	q->a = (int*) malloc (sizeof(int)*m);
+	return q;
+}
+
+void enqueue(int j1, Q* q){
+	if(isFull(q))
+		printf("FULL");
+	else{
+		if(isEmpty(q))
+			q->f = q->r = 0;
+		else
+			q->r = ((q->r)+1)%(q->max);
+		q->a[q->r] = j1;
+		q->s++;
+	}
+}
+
+int dequeue(Q* q){
+	int t = -1;
+	if(isEmpty(q))
+		printf("Empty Queue!");
+	else{
+		t = q->a[q->f];
+		q->s--;
+		if(q->s)
+			q->f = ((q->f)+1)%(q->max);
+		else
+			q->f = q->r = -1;
+	}
+	return(t);
+}
+
+void bfs(int x, int n,int visited[],int flag){
+	Q* q = initialize(n*n);
+	int v;
+	enqueue(x,q);
+	while(q->s != 0){
+		v = dequeue(q);
+		if(visited[v] != 1){
+			visited[v] = 1;
+			if(flag == 0)
+				printf("v : %d\n",v);
+			else
+				printf("v : %c\n",v+65);
+			for (int i = 0; i<n; i++){
+				if(adj[v][i] == 1){
+					enqueue(i,q);
+				}
+			}
+		}
+	}
+}
+
+int main(){
+	int n,e;
+	printf("Enter the vertices for directed graph : ");
+	scanf("%d",&n);
+	printf("Enter the edges for directed graph : ");
+	scanf("%d",&e);
+	//int adj[n][n];
+	int visited[n];
+	int visited1[n];
+	for(int i = 0; i<n; i++){
+		for(int j = 0; j<n; j++)
+			adj[i][j] = 0;
+		visited[i] = 0; 
+		visited1[i] = 0;
+	}
+
+	printf("Enter the edges for directed graph :\n");
+	for(int i = 0; i<e; i++){
+		int u,v;
+		scanf("%d %d",&u,&v);
+		adj[u][v] = 1;
+	}
+	printf("\nAdj matrix :\n");
+	for(int i = 0; i<n; i++){
+		for(int j = 0; j<n; j++)
+			printf("%d ",adj[i][j]);
+		printf("\n");
+	}
+	printf("\nBFS order :\n\n");
+	bfs(0,n,visited,0);
+	printf("\nDFS order :\n\n");
+	dfs(0,n,visited1,0);
+
+	printf("\nEnter the vertices for undirected graph : ");
+	scanf("%d",&n);
+	printf("Enter the edges for undirected graph : ");
+	scanf("%d",&e);
+	for(int i = 0; i<n; i++){
+		for(int j = 0; j<n; j++)
+			adj[i][j] = 0;
+		visited[i] = 0; 
+		visited1[i] = 0;
+	}
+
+	printf("Enetr the edges for undirected graph :\n");
+	for(int i = 0; i<e; i++){
+		char u,v;
+		scanf(" %c %c",&u,&v);
+		int u1,v1;
+		u1 = (int)u - 65;
+		v1 = (int)v - 65;
+		//printf("%d %d",u1,v1);
+		adj[u1][v1] = 1;
+		adj[v1][u1] = 1;
+	}
+	printf("\nAdj matrix :\n");
+	for(int i = 0; i<n; i++){
+		for(int j = 0; j<n; j++)
+			printf("%d ",adj[i][j]);
+		printf("\n");
+	}
+	printf("\nBFS order :\n\n");
+	bfs(0,n,visited,1);
+	printf("\nDFS order :\n\n");
+	dfs(0,n,visited1,1);
+
+}
+
+/*
+OUTPUT:
+
+Enter the vertices for directed graph : 5
+Enter the edges for directed graph : 6
+Enter the edges for directed graph :
+0 1
+1 2
+2 3
+3 0
+2 4
+4 2
+
+Adj matrix :
+0 1 0 0 0 
+0 0 1 0 0 
+0 0 0 1 1 
+1 0 0 0 0 
+0 0 1 0 0 
+
+BFS order :
+
+v : 0
+v : 1
+v : 2
+v : 3
+v : 4
+
+DFS order :
+
+v : 0
+v : 1
+v : 2
+v : 4
+v : 3
+
+Enter the vertices for undirected graph : 5
+Enter the edges for undirected graph : 5
+Enetr the edges for undirected graph :
+A B
+A C
+A E
+B D
+B E
+
+Adj matrix :
+0 1 1 0 1 
+1 0 0 1 1 
+1 0 0 0 0 
+0 1 0 0 0 
+1 1 0 0 0 
+
+BFS order :
+
+v : A
+v : B
+v : C
+v : E
+v : D
+
+DFS order :
+
+v : A
+v : E
+v : B
+v : D
+v : C
+
+*/

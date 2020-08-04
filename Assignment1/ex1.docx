@@ -1,0 +1,121 @@
+#include<stdio.h>
+void main()
+{
+	int size,array[size],number,cont,option,value=0;
+	printf("enter the size of elements:");
+	scanf("%d",&size);
+	printf("enter array elements\n");
+	for(int i=0;i<size;i++)
+	 {
+	   scanf("%d",&array[i]);
+	 }
+	printf("enter the number to be searched:");
+	scanf("%d",&number);
+    sort(array,size);
+	printf("sorted:\n");
+    for(int i=0;i<size;i++)
+	 {
+	   printf("%d\n",array[i]);
+	 }
+     printf("\n");
+    do{
+
+	printf("enter the option 1 for linear search and 2 binary search:");
+	scanf("%d",&option);
+	if(option == 1)
+         value = linear(array,size,number);
+     else
+     {value = binary(array,size,number);}
+        if(value == -1)
+            printf("the number not found\n");
+        else
+            printf("the number found at %d\n",value+1);
+
+        printf("to continue enter 1 or enter 0");
+         scanf("%d",&cont);
+     }while(cont!=0);
+}
+int sort(int *array,int length)
+{
+
+    for(int i=0;i<length;i++)
+    {
+        for(int j=1+i;j<length;j++)
+        {
+            int temp=0;
+            if(array[i]>array[j])
+            {	temp = array[i];
+                array[i]=array[j];
+                array[j]=temp;
+            }
+        }
+    }
+
+
+
+
+
+}
+
+int linear(int array1[100],int max,int searchvalue)
+{
+	int count = -1;
+	for(int k=0;k<max;k++)
+	{
+		if(array1[k] == searchvalue)
+		{
+			count = k;
+		}
+	}
+	if(count>-1)
+		return count;
+	else
+		return -1;
+    
+}
+
+int binary(int array1[100],int max,int searchvalue)
+{
+    int first,last,middle;
+       first = 0;
+       last = max-1;
+       middle = (first + last)/2;
+       while(first<=last)
+       {
+           if(searchvalue > array1[middle])
+              first = middle+1;
+           else if(searchvalue == array1[middle])
+                    return middle;
+           else
+               last = middle -1;
+           middle = (first + last)/2;
+
+
+
+       }
+       return -1;
+}
+
+/*output:
+
+enter the size of elements:5
+enter array elements
+5
+2
+4
+3
+2
+enter the number to be searched:4
+sorted:
+2
+2
+3
+4
+5
+
+enter the option 1 for linear search and 2 binary search:1
+the number found at 4
+to continue enter 1 or enter 01
+enter the option 1 for linear search and 2 binary search:2
+the number found at 4
+to continue enter 1 or enter 00*/

@@ -1,0 +1,386 @@
+/*avl tree*/
+/* avl.h */
+
+#include<stdio.h>
+#include<stdlib.h>
+typedef struct avlnode *position; 
+typedef struct avlnode *avltree;
+typedef char elementtype; 
+struct avlnode
+{
+
+	elementtype tamil[50];
+	elementtype english[50];
+	elementtype hindi[50]; 
+	avltree left;
+	avltree right;
+	int height;
+};
+
+int max(int a,int b)
+{
+	if(a > b)
+		return a;
+	else
+		return b;
+}
+static int height (position p) 
+{
+	if(p == NULL)
+		return -1;
+	else
+		return p->height;
+}
+
+static position singlerotatewithleft(position k2) 
+{
+	printf("\nsinglerotatewithleft\n");
+	position k1;
+	k1=k2->left;
+	k2->left=k1->right;
+	k1->right=k2; 
+	k2->height=max(height(k2->left),height(k2->right))+1; 
+	k1->height=max(height(k1->left),k2-> height)+1; 
+	return k1;
+}
+
+static position singlerotatewithright(position k2) 
+{
+	position k1;
+	k1=k2->right;
+	k2->right=k1->left;
+	k1->left=k2; 
+	k2->height=max(height(k2->right),height(k2->left))+1; 
+	k1->height=max(height(k1->right),k2-> height)+1; 
+	return k1;
+}
+
+static position doublerotatewithleft(position k3) 
+{ 
+	printf("\ndoublerotatewithleft\n");
+	k3->left=singlerotatewithright(k3->left);
+	return singlerotatewithleft(k3);
+}
+
+static position doublerotatewithright(position k3) 
+{ 
+	printf("\ndoublerotatewithright\n");
+	k3->left=singlerotatewithleft(k3->right);
+	return singlerotatewithright(k3);
+}
+
+avltree insert(avltree t,elementtype x[50],elementtype y[50],elementtype z[50]) 
+{
+	if(t == NULL)
+	{
+		t=malloc(sizeof(struct avlnode)); 
+		if(t == NULL)
+			printf("Out of Space");
+		else 
+		{
+			strcpy(t -> english,x);
+			strcpy(t -> tamil,y);
+			strcpy(t -> hindi,z);
+			t->height=0; 
+			t->left=t->right=NULL;
+		}
+	}
+	else  
+	{
+		if(strcmp(x,t->english) < 0)
+		{
+		t->left=insert(t->left,x,y,z);
+		
+		if(height(t->left) - height(t->right)== 2)
+			{
+				printf("Rotation : \t");
+				if(strcmp(x,t->english) < 0) 
+				{
+					printf("\nsinglerotatewithleft\n\n");
+					t=singlerotatewithleft(t);
+				}
+				else
+				{
+					printf("\ndoublerotatewithleft\n\n");
+					t=doublerotatewithleft(t);
+				}
+			}
+		}
+    	if(strcmp(x,t->english) > 0) 
+    	{
+
+		t->right=insert(t->right,x,y,z); 
+		if(height(t->right) - height(t->left) == 2)
+			{
+				printf("Rotation : \t");
+				if(strcmp(x,t->english) > 0)
+				{ 
+					printf("\nsinglerotatewithright\n");
+					t=singlerotatewithright(t);
+				}
+				else
+				{
+					printf("\ndoublerotatewithright\n\n");
+					t=doublerotatewithright(t);
+				}
+			}
+		} 
+	}
+	t->height=max(height(t->left),height(t->right))+1; 
+	return t;
+	printf("return");
+}
+
+void inorder(avltree t)
+{
+	if(t != NULL)
+	{
+		inorder(t->left);
+		printf("%s   %s   %s\n",t->english,t->tamil,t->hindi);
+		inorder(t->right);
+	}
+}
+
+void findTamilHindi(avltree t,char x[50])
+{
+	if(t != NULL)
+	{
+		findTamilHindi(t->left,x);
+		if(strcmp(x,t -> english) == 0)
+		{
+			printf("%s in tamil : %s\t",t -> english,t -> tamil);
+			printf("%s in hindi : %s\n\n",t -> english,t -> hindi);
+		}
+		findTamilHindi(t->right,x);
+	}
+}
+
+
+/*main*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "avl.h"
+
+int main()
+{
+	int i=0;
+	avltree t=NULL;
+	position f=NULL;
+	t=insert(t,"Algorithm","வழிமுறை","कलन विधि"); inorder(t);
+	t=insert(t,"Animation","அனிமேஷன்","एनीमेशन"); inorder(t);
+	t=insert(t,"Bit","துணுக்கு","बिट"); inorder(t);
+	t=insert(t,"Browser","உலாவி","ब्राउज़र"); inorder(t);
+	t=insert(t,"Clipboard","மைற~பலைக","क्लिपबोर्ड"); inorder(t);
+	t=insert(t,"Compiler","தொகுப்பி","संकलक"); inorder(t);
+	t=insert(t,"Digital","எண்முறை","डिजिटल"); inorder(t);
+	t=insert(t,"Printer","அச்சு இயந்திரம்","छापनेवाला यंत्र"); inorder(t);
+	t=insert(t,"Encoding","குறியீட்டு","संकेतीकरण"); inorder(t);
+	t=insert(t,"Gateway","நுழைவாயில்","प्रवेश द्वार"); inorder(t);
+	t=insert(t,"Hardware","வன்பொருள்","हार्डवेयर"); inorder(t);
+	t=insert(t,"Internet","இணைய","अंतराजाल"); inorder(t);
+	t=insert(t,"Memory","நினைவக","याद"); inorder(t);
+	t=insert(t,"Monitor","திரைகளும்","मांनीटर"); inorder(t);
+	t=insert(t,"Password","கடவுச்சொல்","पारण शब्द"); inorder(t);
+
+	findTamilHindi(t,"Algorithm");
+	findTamilHindi(t,"Animation");
+	findTamilHindi(t,"Bit");
+	findTamilHindi(t,"Browser");
+	findTamilHindi(t,"Clipboard");
+	findTamilHindi(t,"Compiler");
+	findTamilHindi(t,"Digital");
+	findTamilHindi(t,"Printer");
+	findTamilHindi(t,"Encoding");
+	findTamilHindi(t,"Gateway");
+	findTamilHindi(t,"Hardware");
+	findTamilHindi(t,"Internet");
+	findTamilHindi(t,"Memory");
+	findTamilHindi(t,"Monitor");
+	findTamilHindi(t,"Password");
+	findTamilHindi(t,"WordNotInDict");
+	
+	return 0;
+}
+
+/*
+
+output:
+
+gml09:Desktop csea39$ ./avlout
+Algorithm   வழிமுறை   कलन विधि
+Algorithm   வழிமுறை   कलन विधि
+Animation   அனிமேஷன்   एनीमेशन
+Rotation : 	
+singlerotatewithright
+Algorithm   வழிமுறை   कलन विधि
+Animation   அனிமேஷன்   एनीमेशन
+Bit   துணுக்கு   बिट
+Algorithm   வழிமுறை   कलन विधि
+Animation   அனிமேஷன்   एनीमेशन
+Bit   துணுக்கு   बिट
+Browser   உலாவி   ब्राउज़र
+Rotation : 	
+singlerotatewithright
+Algorithm   வழிமுறை   कलन विधि
+Animation   அனிமேஷன்   एनीमेशन
+Bit   துணுக்கு   बिट
+Browser   உலாவி   ब्राउज़र
+Clipboard   மைற~பலைக   क्लिपबोर्ड
+Rotation : 	
+singlerotatewithright
+Algorithm   வழிமுறை   कलन विधि
+Animation   அனிமேஷன்   एनीमेशन
+Bit   துணுக்கு   बिट
+Browser   உலாவி   ब्राउज़र
+Clipboard   மைற~பலைக   क्लिपबोर्ड
+Compiler   தொகுப்பி   संकलक
+Rotation : 	
+singlerotatewithright
+Algorithm   வழிமுறை   कलन विधि
+Animation   அனிமேஷன்   एनीमेशन
+Bit   துணுக்கு   बिट
+Browser   உலாவி   ब्राउज़र
+Clipboard   மைற~பலைக   क्लिपबोर्ड
+Compiler   தொகுப்பி   संकलक
+Digital   எண்முறை   डिजिटल
+Algorithm   வழிமுறை   कलन विधि
+Animation   அனிமேஷன்   एनीमेशन
+Bit   துணுக்கு   बिट
+Browser   உலாவி   ब्राउज़र
+Clipboard   மைற~பலைக   क्लिपबोर्ड
+Compiler   தொகுப்பி   संकलक
+Digital   எண்முறை   डिजिटल
+Printer   அச்சு இயந்திரம்   छापनेवाला यंत्र
+Rotation : 	
+singlerotatewithright
+Algorithm   வழிமுறை   कलन विधि
+Animation   அனிமேஷன்   एनीमेशन
+Bit   துணுக்கு   बिट
+Browser   உலாவி   ब्राउज़र
+Clipboard   மைற~பலைக   क्लिपबोर्ड
+Compiler   தொகுப்பி   संकलक
+Digital   எண்முறை   डिजिटल
+Encoding   குறியீட்டு   संकेतीकरण
+Printer   அச்சு இயந்திரம்   छापनेवाला यंत्र
+Rotation : 	
+singlerotatewithright
+Algorithm   வழிமுறை   कलन विधि
+Animation   அனிமேஷன்   एनीमेशन
+Bit   துணுக்கு   बिट
+Browser   உலாவி   ब्राउज़र
+Clipboard   மைற~பலைக   क्लिपबोर्ड
+Compiler   தொகுப்பி   संकलक
+Digital   எண்முறை   डिजिटल
+Encoding   குறியீட்டு   संकेतीकरण
+Gateway   நுழைவாயில்   प्रवेश द्वार
+Printer   அச்சு இயந்திரம்   छापनेवाला यंत्र
+Rotation : 	
+singlerotatewithright
+Algorithm   வழிமுறை   कलन विधि
+Animation   அனிமேஷன்   एनीमेशन
+Bit   துணுக்கு   बिट
+Browser   உலாவி   ब्राउज़र
+Clipboard   மைற~பலைக   क्लिपबोर्ड
+Compiler   தொகுப்பி   संकलक
+Digital   எண்முறை   डिजिटल
+Encoding   குறியீட்டு   संकेतीकरण
+Gateway   நுழைவாயில்   प्रवेश द्वार
+Hardware   வன்பொருள்   हार्डवेयर
+Printer   அச்சு இயந்திரம்   छापनेवाला यंत्र
+Rotation : 	
+singlerotatewithright
+Algorithm   வழிமுறை   कलन विधि
+Animation   அனிமேஷன்   एनीमेशन
+Bit   துணுக்கு   बिट
+Browser   உலாவி   ब्राउज़र
+Clipboard   மைற~பலைக   क्लिपबोर्ड
+Compiler   தொகுப்பி   संकलक
+Digital   எண்முறை   डिजिटल
+Encoding   குறியீட்டு   संकेतीकरण
+Gateway   நுழைவாயில்   प्रवेश द्वार
+Hardware   வன்பொருள்   हार्डवेयर
+Internet   இணைய   अंतराजाल
+Printer   அச்சு இயந்திரம்   छापनेवाला यंत्र
+Rotation : 	
+singlerotatewithright
+Algorithm   வழிமுறை   कलन विधि
+Animation   அனிமேஷன்   एनीमेशन
+Bit   துணுக்கு   बिट
+Browser   உலாவி   ब्राउज़र
+Clipboard   மைற~பலைக   क्लिपबोर्ड
+Compiler   தொகுப்பி   संकलक
+Digital   எண்முறை   डिजिटल
+Encoding   குறியீட்டு   संकेतीकरण
+Gateway   நுழைவாயில்   प्रवेश द्वार
+Hardware   வன்பொருள்   हार्डवेयर
+Internet   இணைய   अंतराजाल
+Memory   நினைவக   याद
+Printer   அச்சு இயந்திரம்   छापनेवाला यंत्र
+Rotation : 	
+singlerotatewithright
+Algorithm   வழிமுறை   कलन विधि
+Animation   அனிமேஷன்   एनीमेशन
+Bit   துணுக்கு   बिट
+Browser   உலாவி   ब्राउज़र
+Clipboard   மைற~பலைக   क्लिपबोर्ड
+Compiler   தொகுப்பி   संकलक
+Digital   எண்முறை   डिजिटल
+Encoding   குறியீட்டு   संकेतीकरण
+Gateway   நுழைவாயில்   प्रवेश द्वार
+Hardware   வன்பொருள்   हार्डवेयर
+Internet   இணைய   अंतराजाल
+Memory   நினைவக   याद
+Monitor   திரைகளும்   मांनीटर
+Printer   அச்சு இயந்திரம்   छापनेवाला यंत्र
+Rotation : 	
+singlerotatewithright
+Algorithm   வழிமுறை   कलन विधि
+Animation   அனிமேஷன்   एनीमेशन
+Bit   துணுக்கு   बिट
+Browser   உலாவி   ब्राउज़र
+Clipboard   மைற~பலைக   क्लिपबोर्ड
+Compiler   தொகுப்பி   संकलक
+Digital   எண்முறை   डिजिटल
+Encoding   குறியீட்டு   संकेतीकरण
+Gateway   நுழைவாயில்   प्रवेश द्वार
+Hardware   வன்பொருள்   हार्डवेयर
+Internet   இணைய   अंतराजाल
+Memory   நினைவக   याद
+Monitor   திரைகளும்   मांनीटर
+Password   கடவுச்சொல்   पारण शब्द
+Printer   அச்சு இயந்திரம்   छापनेवाला यंत्र
+Algorithm in tamil : வழிமுறை	Algorithm in hindi : कलन विधि
+
+Animation in tamil : அனிமேஷன்	Animation in hindi : एनीमेशन
+
+Bit in tamil : துணுக்கு	Bit in hindi : बिट
+
+Browser in tamil : உலாவி	Browser in hindi : ब्राउज़र
+
+Clipboard in tamil : மைற~பலைக	Clipboard in hindi : क्लिपबोर्ड
+
+Compiler in tamil : தொகுப்பி	Compiler in hindi : संकलक
+
+Digital in tamil : எண்முறை	Digital in hindi : डिजिटल
+
+Printer in tamil : அச்சு இயந்திரம்	Printer in hindi : छापनेवाला यंत्र
+
+Encoding in tamil : குறியீட்டு	Encoding in hindi : संकेतीकरण
+
+Gateway in tamil : நுழைவாயில்	Gateway in hindi : प्रवेश द्वार
+
+Hardware in tamil : வன்பொருள்	Hardware in hindi : हार्डवेयर
+
+Internet in tamil : இணைய	Internet in hindi : अंतराजाल
+
+Memory in tamil : நினைவக	Memory in hindi : याद
+
+Monitor in tamil : திரைகளும்	Monitor in hindi : मांनीटर
+
+Password in tamil : கடவுச்சொல்	Password in hindi : पारण शब्द
+
+
+
+*/

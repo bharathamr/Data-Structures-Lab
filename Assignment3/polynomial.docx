@@ -1,0 +1,346 @@
+/* proto.h */
+
+
+typedef struct mynode{
+	int coefficient;
+	int exponent;
+	struct mynode *next;
+}node;
+
+node* createemptylist();
+void insert(node *p,int a,int b);
+void display(node *s);
+node* add(node* s1,node *s2);
+node* multiply(node* s1,node *s2);
+node* duplicate(node *s3);
+node* arrange(node *s4);
+
+/* def.h */
+
+
+node* createemptylist()
+{
+    node *h;
+    h = (node*)malloc(sizeof(node));
+    h->next = NULL;
+    return h; 
+}
+
+void insert(node* p,int a,int b)
+{
+    node *x,*y;
+    x = (node*)malloc(sizeof(node));
+    x -> coefficient = a;
+    x -> exponent = b;
+    y = p;
+    while(y -> next != NULL)
+    	y = y -> next;
+    x -> next = y -> next; 
+    y -> next = x;  
+}
+
+node* add(node* s1,node *s2)
+{
+    node *sum,*t1,*t2;
+    int c,d,c1,d1;
+    sum = createemptylist();
+    t1 = s1 -> next;
+    t2 = s2 -> next;
+    while((t1 != NULL) && (t2 != NULL))
+    {
+    	if(t1 -> exponent == t2 -> exponent)
+    	{
+    		c  = t1 -> coefficient + t2 -> coefficient;
+                d  = t1 -> exponent;
+                t1 = t1 -> next;
+                t2 = t2 -> next;
+                if(c == 0)
+                   continue;
+    	}
+    	else
+    	{
+    		if(t1 -> exponent > t2 -> exponent)
+    		{
+    			c = t1 -> coefficient;
+    			d = t1 -> exponent;
+                        t1 = t1 -> next;
+    		}
+    		else
+    		{
+    			c = t2 -> coefficient;
+    			d = t2 -> exponent;
+                        t2 = t2 -> next;
+    		}
+    	}
+        insert(sum,c,d);
+        
+        
+       }
+      while(s1 -> next || s2 -> next)
+      {
+         if(s1 -> next -> next == NULL)
+         {
+               c1 = s1 -> next -> exponent;
+               d1 = s1 -> next -> coefficient;
+               if(d != c1)
+                   insert(sum,d1,c1);
+         }
+         if(s2 -> next -> next == NULL)
+         {
+             c1 = s2 -> next -> exponent;
+             d1 = s2 -> next -> coefficient;
+             if(d != c1)
+                   insert(sum,d1,c1);
+         }
+         s1 = s1 -> next;
+         s2 = s2 -> next;         
+      }
+      return sum;
+}
+
+node* multiply(node *s1,node *s2)
+{
+      node *t1,*t2,*sum1;
+      sum1 = createemptylist();
+      int c,d;
+      t1 = s1 -> next;
+      while(t1 != NULL)
+      {
+           t2 = s2 -> next;
+           while(t2 != NULL)
+           {
+                c = t1 -> coefficient * t2 -> coefficient;
+                d = t1 -> exponent + t2 -> exponent;
+                insert(sum1,c,d);
+                t2 = t2 -> next;
+           }
+           t1 = t1 -> next;
+      }
+      return sum1;
+}
+
+node* duplicate(node *s3)
+{
+    node *t1,*t2;
+    t1 = s3 -> next;
+    while(t1 != NULL && t1 -> next != NULL)
+    {
+        t2 = t1;
+        while(t2 -> next != NULL )
+        {
+             if(t1 -> exponent == t2-> next -> exponent)
+             {
+                 t1 -> coefficient += t2 -> next -> coefficient;
+                 t2 -> next = t2 -> next -> next;
+             }
+             else
+                 t2 = t2 -> next;
+        }
+        t1 = t1 -> next;
+    }
+    arrange(s3);
+    return s3;
+
+}
+
+node* arrange(node *s4)
+{
+     node *t1,*t2;
+     t1 = s4 -> next;
+     while(t1 != NULL && t1 -> next != NULL)
+     {
+         for(t2 = t1 -> next; t2!= NULL; t2 = t2 -> next)
+         {
+               if(t1 -> exponent < t2 -> exponent)
+               {
+                  int s1,s2;
+                  s1 = t1 -> coefficient;
+                  s2 = t1 -> exponent;
+                  t1 -> coefficient = t2 -> coefficient;
+                  t1 -> exponent = t2 -> exponent;
+                  t2 -> coefficient= s1;
+                  t2 -> exponent = s2;
+               }                
+         }
+         t1 = t1 -> next;
+     }
+}
+
+void display(node *s)
+{
+	node *dis;
+	for(dis = s->next; dis != NULL; dis = dis -> next)
+        {
+            if(dis -> exponent == 0)
+	       printf("%d",dis->coefficient);
+            else
+            {
+              if(dis -> next != NULL)
+               {
+                 if(dis -> next -> coefficient > 0)
+                  printf("%dx^%d+",dis->coefficient,dis -> exponent);
+                 else
+                  printf("%dx^%d",dis->coefficient,dis -> exponent);
+               }
+               else
+                  printf("%dx^%d",dis->coefficient,dis -> exponent);
+            }
+        }
+        printf("\n\n");
+}
+
+
+/* main function */
+
+#include<stdio.h>
+#include<stdlib.h>
+#include"proto.h"
+#include"def.h"
+void main()
+{
+    node *hd,*hd1,*addsum,*multsum,*submultsum;
+    int coeff,expo,stop,stop1,op,stop2;
+    addsum = (node*)malloc(sizeof(node));
+    multsum = (node*)malloc(sizeof(node));
+    submultsum = (node*)malloc(sizeof(node));
+    do
+    {
+    hd = createemptylist();
+    hd1 = createemptylist();
+    printf("enter the input for first polynomial\n");
+    do
+    {
+    	printf("enter the coefficient : ");
+    	scanf("%d",&coeff);
+    	printf("enter the exponent : ");
+    	scanf("%d",&expo);
+    	insert(hd,coeff,expo);
+    	printf("enter 1 to continue the input or else 0 to exit");
+    	scanf("%d",&stop);
+    }while(stop != 0);
+    printf("enter the input for second polynomial\n");
+    do
+    {
+    	printf("enter the coefficient : ");
+    	scanf("%d",&coeff);
+    	printf("enter the exponent : ");
+    	scanf("%d",&expo);
+    	insert(hd1,coeff,expo);
+    	printf("enter 1 to continue the input or else 0 to exit");
+    	scanf("%d",&stop);
+    }while(stop != 0);
+   do
+    {
+
+       printf("\nEnter\n1: ADD\n2: MULTIPLY\n");
+       scanf("%d",&op);
+       printf("Polynomial 1 : ");
+       display(hd);
+       printf("\nPolynomial 2 : ");
+       display(hd1);
+       if(op == 1)
+       {
+       printf("\nthe sum of add is : \n");
+       addsum = add(hd,hd1);
+       display(addsum);
+       }
+       else
+       {
+         if(op == 2)
+         {
+            printf("\nthe sum of multiply is : \n");
+            submultsum = multiply(hd,hd1);
+            multsum = duplicate(submultsum);
+            display(multsum);
+         }
+         else
+         {
+            printf("\noops!!!!! NO SUCH OPERATIONS");
+            continue;
+         }
+    }
+    printf("if you want to do the operation on same polynomial\n1: to continue\n0: to exit\n");
+    scanf("%d",&stop1);
+   }while(stop1 != 0);
+   printf("if you want to do operation on different polynomial\n1: to continue\n0: to exit\n");
+   scanf("%d",&stop2);
+  }while(stop2!=0);
+}
+
+
+
+/*output:
+
+enter the input for first polynomial
+enter the coefficient : 3
+enter the exponent : 12
+enter 1 to continue the input or else 0 to exit1
+enter the coefficient : 8
+enter the exponent : 8
+enter 1 to continue the input or else 0 to exit1
+enter the coefficient : -22
+enter the exponent : 4
+enter 1 to continue the input or else 0 to exit1
+enter the coefficient : 3
+enter the exponent : 1
+enter 1 to continue the input or else 0 to exit1
+enter the coefficient : -7
+enter the exponent : 0
+enter 1 to continue the input or else 0 to exit0
+enter the input for second polynomial
+enter the coefficient : 7
+enter the exponent : 14
+enter 1 to continue the input or else 0 to exit1
+enter the coefficient : -10
+enter the exponent : 9
+enter 1 to continue the input or else 0 to exit1
+enter the coefficient : -8
+enter the exponent : 8
+enter 1 to continue the input or else 0 to exit1
+enter the coefficient : 6
+enter the exponent : 5
+enter 1 to continue the input or else 0 to exit1
+enter the coefficient : -9
+enter the exponent : 1
+enter 1 to continue the input or else 0 to exit0
+
+Enter
+1: ADD
+2: MULTIPLY
+1
+Polynomial 1 : 3x^12+8x^8-22x^4+3x^1-7
+
+
+Polynomial 2 : 7x^14-10x^9-8x^8+6x^5-9x^1
+
+
+the sum of add is : 
+7x^14+3x^12-10x^9+6x^5-22x^4-6x^1-7
+
+if you want to do the operation on same polynomial
+1: to continue
+0: to exit
+1
+
+Enter
+1: ADD
+2: MULTIPLY
+2
+Polynomial 1 : 3x^12+8x^8-22x^4+3x^1-7
+
+
+Polynomial 2 : 7x^14-10x^9-8x^8+6x^5-9x^1
+
+
+the sum of multiply is : 
+21x^26+56x^22-30x^21-24x^20-154x^18-62x^17-64x^16+21x^15-49x^14+241x^13+176x^12-30x^10-158x^9+56x^8+18x^6+156x^5-27x^2+63x^1
+
+if you want to do the operation on same polynomial
+1: to continue
+0: to exit
+0
+if you want to do operation on different polynomial
+1: to continue
+0: to exit
+0
+*/
